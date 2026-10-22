@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Вход — Учебная платформа{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Вход в систему</h1>
+  <p class="muted">Информационная платформа для студентов и преподавателей</p>
+
+  {% if error %}<div class="flash flash-error">{{ error }}</div>{% endif %}
+
+  <form method="post" action="{{ url_for('login') }}">
+    <label>Логин
+      <input type="text" name="login" required autocomplete="username">
+    </label>
+    <label>Пароль
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <label>Кто вы?
+      <select name="role" required>
+        <option value="student">Студент</option>
+        <option value="teacher">Преподаватель</option>
+      </select>
+    </label>
+    <button class="btn-primary" type="submit">Войти</button>
+  </form>
+
+  <p class="muted center">Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрируйтесь</a></p>
+</div>
+{% endblock %}

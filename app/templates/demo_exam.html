@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Демоэкзамен — Учебная платформа{% endblock %}
+{% block content %}
+
+<!--
+  ИНТЕГРАЦИЯ ВАШЕГО HTML-ФАЙЛА:
+  Замените содержимое блока <div id="exam-stand"> ниже (и массив QUESTIONS
+  в exam.js) на разметку/логику вашего готового html-файла демоэкзамена.
+  Кнопка «Сохранить результат» отправит итог в БД платформы через
+  POST /api/exam-result — этот механизм менять не нужно.
+-->
+
+<h1>📝 Демоэкзамен</h1>
+<p class="muted">Ответьте на вопросы. По завершении нажмите «Завершить тестирование» —
+результат будет сохранён в системе и будет виден преподавателю.</p>
+
+<div id="exam-stand">
+  <form id="exam-form"></form>
+
+  <div class="exam-footer">
+    <button id="finish-btn" class="btn-primary" type="button">Завершить тестирование</button>
+    <div id="exam-summary" class="summary hidden"></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='exam.js') }}"></script>
+{% endblock %}

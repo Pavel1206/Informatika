@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Кабинет — Учебная платформа{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1>
+    {% if current_user.role == 'teacher' %}Кабинет преподавателя{% else %}Кабинет студента{% endif %}
+  </h1>
+  <a class="btn-primary" href="{{ url_for('demo_exam') }}">Пройти демоэкзамен →</a>
+</div>
+
+<section>
+  <h2>📚 Практические работы</h2>
+  {% if practicals %}
+  <div class="cards">
+    {% for p in practicals %}
+    <a class="card" href="{{ url_for('practical_detail', pid=p.id) }}">
+      <div class="card-title">{{ p.title }}</div>
+      <div class="muted">{{ p.subject }} · группа {{ p.group_name or 'все' }}
+        · {{ p.teacher_name or '—' }}</div>
+      {% if p.deadline %}<div class="deadline">Срок: {{ p.deadline }}</div>{% endif %}
+      {% if current_user.role == 'teacher' %}
+      <form method="post" action="{{ url_for('practical_delete', pid=p.id) }}"
+            onsubmit="return confirm('Удалить работу?');">
+        <button class="btn-danger" type="submit">Удалить</button>
+      </form>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">Пока нет практических работ.
+    {% if current_user.role == 'teacher' %}
+    Создавайте их скриптом: <code>python scripts/create_practical.py --interactive</code>
+    {% endif %}</p>
+  {% endif %}
+</section>
+
+{% if current_user.role == 'teacher' %}
+<section>
+  <h2>📊 Результаты демоэкзаменов</h2>
+  {% if results %}
+  <table>
+    <tr><th>Студент</th><th>Балл</th><th>Макс.</th><th>Итог</th><th>Дата</th></tr>
+    {% for r in results %}
+    <tr>
+      <td>{{ r.full_name or r.login or 'гость' }}</td>
+      <td>{{ r.score }}</td><td>{{ r.max_score }}</td>
+      <td class="{{ 'ok' if r.passed else 'fail' }}">{{ 'Зачтено' if r.passed else 'Не зачтено' }}</td>
+      <td>{{ r.finished_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">Результатов ещё нет.</p>{% endif %}
+</section>
+{% else %}
+<section>
+  <h2>🏁 Мои результаты демоэкзамена</h2>
+  {% if my_results %}
+  <table>
+    <tr><th>Балл</th><th>Макс.</th><th>Итог</th><th>Дата</th></tr>
+    {% for r in my_results %}
+    <tr>
+      <td>{{ r.score }}</td><td>{{ r.max_score }}</td>
+      <td class="{{ 'ok' if r.passed else 'fail' }}">{{ 'Зачтено' if r.passed else 'Не зачтено' }}</td>
+      <td>{{ r.finished_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">Вы ещё не проходили демоэкзамен.</p>{% endif %}
+</section>
+{% endif %}
+
+{% endblock %}
