@@ -102,6 +102,40 @@ def get_user_by_id(user_id: int):
         return db.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
 
+def list_users(role: str | None = None):
+    with get_db() as db:
+        if role:
+            return db.execute(
+                "SELECT id, login, role, full_name, group_name, subject, created_at "
+                "FROM users WHERE role = ? ORDER BY full_name, login", (role,),
+            ).fetchall()
+        return db.execute(
+            "SELECT id, login, role, full_name, group_name, subject, created_at "
+            "FROM users ORDER BY role, full_name, login"
+        ).fetchall()
+
+
+def delete_user(user_id: int) -> bool:
+    """Полное удаление пользователя.
+
+    Сначала убираем связанные записи (практические работы создателя и
+    результаты экзаменов), затем самого пользователя. Возвращает True,
+    если пользователь существовал.
+    """
+    with get_db() as db:
+        exists = db.execute("SELECT 1 FROM users WHERE id = ?",
+                            (user_id,)).fetchone()
+        if exists is None:
+            return False
+        # работы оставляем, но отвязываем от удалённого автора;
+        # результаты экзаменов удаляем вместе с пользователем
+        db.execute("UPDATE practicals SET created_by = NULL WHERE created_by = ?",
+                   (user_id,))
+        db.execute("DELETE FROM exam_results WHERE user_id = ?", (user_id,))
+        db.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        return True
+
+
 # ---------- practicals ----------
 
 def insert_practical(title: str, subject: str, group_name: str, description: str,

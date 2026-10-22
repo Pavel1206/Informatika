@@ -12,6 +12,9 @@
     <span class="brand">🎓 Учебная платформа</span>
     <a href="{{ url_for('dashboard') }}">Кабинет</a>
     <a href="{{ url_for('demo_exam') }}">Демоэкзамен</a>
+    {% if current_user.role == 'teacher' %}
+    <a href="{{ url_for('users_page') }}">Пользователи</a>
+    {% endif %}
     <span class="spacer"></span>
     <span class="who">{{ current_user.full_name or current_user.login }}
       ({{ 'преподаватель' if current_user.role == 'teacher' else 'студент' }})</span>

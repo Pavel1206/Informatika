@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Пользователи — Учебная платформа{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <h1>👥 Управление пользователями</h1>
+  <div class="filters">
+    <a class="btn-primary {{ 'active' if not role_filter else '' }}" href="{{ url_for('users_page') }}">Все</a>
+    <a class="btn-primary {{ 'active' if role_filter == 'student' else '' }}" href="{{ url_for('users_page', role='student') }}">Студенты</a>
+    <a class="btn-primary {{ 'active' if role_filter == 'teacher' else '' }}" href="{{ url_for('users_page', role='teacher') }}">Преподаватели</a>
+  </div>
+</div>
+
+{% if users %}
+<table>
+  <tr>
+    <th>Логин</th><th>ФИО</th><th>Роль</th><th>Группа / Предмет</th>
+    <th>Зарегистрирован</th><th></th>
+  </tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.login }}</td>
+    <td>{{ u.full_name or '—' }}</td>
+    <td>{{ 'преподаватель' if u.role == 'teacher' else 'студент' }}</td>
+    <td>{{ (u.group_name or u.subject) or '—' }}</td>
+    <td>{{ u.created_at }}</td>
+    <td>
+      {% if u.id != current_user.id %}
+      <form method="post" action="{{ url_for('user_delete', uid=u.id) }}"
+            onsubmit="return confirm('Удалить пользователя «{{ u.full_name or u.login }}»? Вместе с ним будут удалены его результаты экзаменов. Действие необратимо.');">
+        <button class="btn-danger" type="submit">Удалить</button>
+      </form>
+      {% else %}
+      <span class="muted">(это вы)</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">Пользователей не найдено.</p>
+{% endif %}
+
+<p class="muted">
+  💡 Быстрое удаление без входа в систему (из командной строки, из папки проекта):<br>
+  <code>python -c "from app import database as db; print(db.delete_user(ИД))"</code>
+  — где ИД номер пользователя из таблицы выше.
+</p>
+
+{% endblock %}

@@ -130,6 +130,32 @@ def dashboard():
                            results=results, my_results=my_results)
 
 
+# ---------- управление пользователями (только преподаватель) ----------
+
+@app.route("/users")
+@login_required("teacher")
+def users_page():
+    role_filter = request.args.get("role", "")
+    if role_filter not in ("student", "teacher"):
+        role_filter = ""
+    users = db.list_users(role_filter or None)
+    return render_template("users.html", users=users, role_filter=role_filter)
+
+
+@app.route("/users/<int:uid>/delete", methods=["POST"])
+@login_required("teacher")
+def user_delete(uid: int):
+    me = session.get("user_id")
+    if uid == me:
+        flash("Нельзя удалить собственную учётную запись.", "warning")
+        return redirect(url_for("users_page"))
+    if db.delete_user(uid):
+        flash("Пользователь удалён.", "success")
+    else:
+        flash("Пользователь не найден.", "warning")
+    return redirect(request.referrer or url_for("users_page"))
+
+
 # ---------- 2. практические работы ----------
 
 @app.route("/practicals/<int:pid>")

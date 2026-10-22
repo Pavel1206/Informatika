@@ -140,3 +140,10 @@ th { background: #e2e8f0; }
   .auth-card { padding: 1.2rem; margin: 1rem; }
   .page-head { flex-direction: column; align-items: flex-start; }
 }
+
+/* ---------- страница управления пользователями ---------- */
+.filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+.filters a.btn-primary { background: #e8ecf3; color: var(--text); }
+.filters a.btn-primary:hover { background: #d7deea; }
+.filters a.btn-primary.active { background: var(--primary); color: #fff; }
+td form { margin: 0; }
