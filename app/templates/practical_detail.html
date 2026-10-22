@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ p.title }} — Учебная платформа{% endblock %}
+{% block content %}
+<a href="{{ url_for('dashboard') }}">← Назад к списку</a>
+
+<h1>{{ p.title }}</h1>
+<p class="muted">
+  Предмет: {{ p.subject or '—' }} · Группа: {{ p.group_name or 'все группы' }} ·
+  Преподаватель: {{ p.teacher_name or '—' }}
+  {% if p.deadline %} · Срок сдачи: <b>{{ p.deadline }}</b>{% endif %}
+</p>
+
+{% if p.description %}<p>{{ p.description }}</p>{% endif %}
+
+<h2>Задания</h2>
+{% if tasks %}
+<ol class="tasks">
+  {% for t in tasks %}
+  <li>
+    <b>{{ t.title if t is mapping and t.title else t }}</b>
+    {% if t is mapping and t.text %}<p class="muted">{{ t.text }}</p>{% endif %}
+    {% if t is mapping and t.points %}<span class="points">{{ t.points }} б.</span>{% endif %}
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+<p class="muted">Задания не заданы.</p>
+{% endif %}
+
+{% if current_user.role == 'teacher' %}
+<form method="post" action="{{ url_for('practical_delete', pid=p.id) }}"
+      onsubmit="return confirm('Удалить работу?');">
+  <button class="btn-danger" type="submit">Удалить работу</button>
+</form>
+{% endif %}
+{% endblock %}

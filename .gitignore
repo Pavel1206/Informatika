@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+instance/*.db
+server.log
+cookies*.txt
